@@ -104,14 +104,22 @@ const CitizenPortal = ({ showNotification }) => {
     }
   };
 
-  // 📸 Open Camera
+  // 📸 Open Camera (tries back camera first)
   const openCamera = async () => {
     setCameraOpen(true);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: "environment" } }, // 👈 back camera
+      });
       if (videoRef.current) videoRef.current.srcObject = stream;
     } catch {
-      showNotification("Camera access denied or unavailable.");
+      try {
+        // fallback to default camera
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        if (videoRef.current) videoRef.current.srcObject = stream;
+      } catch {
+        showNotification("Camera access denied or unavailable.");
+      }
     }
   };
 
@@ -159,7 +167,14 @@ const CitizenPortal = ({ showNotification }) => {
         <div className="button-group">
           <label className="btn btn-secondary">
             📂 Upload Photo
-            <input type="file" accept="image/*" hidden onChange={(e) => setCapturedImage(URL.createObjectURL(e.target.files[0]))} />
+            <input
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={(e) =>
+                setCapturedImage(URL.createObjectURL(e.target.files[0]))
+              }
+            />
           </label>
 
           <button className="btn btn-secondary" onClick={openCamera}>
@@ -187,7 +202,12 @@ const CitizenPortal = ({ showNotification }) => {
             <img
               src={capturedImage}
               alt="captured"
-              style={{ width: "150px", height: "auto", borderRadius: "8px", border: "1px solid #ccc" }}
+              style={{
+                width: "150px",
+                height: "auto",
+                borderRadius: "8px",
+                border: "1px solid #ccc",
+              }}
             />
           </div>
         )}
@@ -211,7 +231,11 @@ const CitizenPortal = ({ showNotification }) => {
                 <img
                   src={report.image}
                   alt="report"
-                  style={{ width: "120px", borderRadius: "6px", marginTop: "4px" }}
+                  style={{
+                    width: "120px",
+                    borderRadius: "6px",
+                    marginTop: "4px",
+                  }}
                 />
               )}
               <div className="issue-meta">
