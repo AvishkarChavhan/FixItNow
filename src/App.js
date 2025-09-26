@@ -24,7 +24,7 @@ function App() {
     <div className="App">
       {/* Header */}
       <header>
-        <h1>FixItNow</h1>
+        <h1>CivicIntel</h1>
         <div className="header-buttons">
           <button 
             className={activePortal === 'citizen' ? 'active-btn' : ''}
